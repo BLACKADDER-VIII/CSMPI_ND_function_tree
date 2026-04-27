@@ -7,3 +7,7 @@ FuncTree::set_callstack(){
         this->callstack[i] = get_callstack_vec(igraph_strvector_at(&(this->attr_callstack), i));
     }
 }
+
+FuncTree::create_func_graph(){
+    
+}
