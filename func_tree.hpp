@@ -1,5 +1,6 @@
 #include <vector>
 #include <unordered_map>
+#include <set>
 
 extern "C" {
 #include <igraph.h>
@@ -48,4 +49,5 @@ class FuncTree {
     int num_proc;
     std::vector<std::unordered_map<std::string, std::string>> sym_tab_maps;
     igraph_vector_t nd_scores;
+    std::unordered_map<std::string, int> func_name_to_id_map;
 };
