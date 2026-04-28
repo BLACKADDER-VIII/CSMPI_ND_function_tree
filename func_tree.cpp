@@ -47,6 +47,7 @@ FuncTree::create_func_graph(){
     for (std::string fn: func_node_vec){
         igraph_strvector_push_back(&attr_func_names, fn);
     }
-    
+    igraph_add_edges(&(this->func_g), &edges);
+    SETVASV(&(this->func)g, "func_name", &attr_func_names);
 
 }
