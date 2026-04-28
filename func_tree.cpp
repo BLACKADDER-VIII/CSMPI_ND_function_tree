@@ -51,3 +51,33 @@ FuncTree::create_func_graph(){
     SETVASV(&(this->func)g, "func_name", &attr_func_names);
 
 }
+
+FuncTree::annotate_func_graph(){
+    std::vector<bool> is_nd(g.vcount(), false);
+    std::vector<igraph_integer_t> func_node_count(this->func_g.vcount(), 0);
+    std::vector<igraph_integer_t> func_nd_count(this->func_g.vcount(), 0);
+    this->nd_scores.resize(this->func_g.vcount());
+    
+    for (igraph_integer_t i = 0; i<(this->nd_nodes).size(); i++)
+        is_nd[(this->nd_nodes)[i]] = true;
+    igraph_vector_init(&(this->nd_nodes), this->evg.vcount());
+    #pragma omp parallel for
+    for(igraph_integer_t i = 0; i<this->evg.vcount(); i++){
+        int p = VECTOR(this->pid)[i];
+        std::unordered_map<std::string, std::string> sym_tab = this->sym_tab_maps[p];
+        std::vector<std::string> cs = get_callstack_vec(this->callstack[i]);
+        for (std::string& f_addr: cs){
+            std::string f_name = sym_tab[f_addr];
+            int ind = this->func_name_to_id_map[f_name];
+            func_node_count[ind]++;
+            if (is_nd[i])
+                func_nd_count[ind]++;
+        }
+    }
+    #pragma omp parallel for
+    for (int i = 0; i<func_node_count.size(); i++){
+        if (func_node_count[i]==0)
+            continue;
+        this->nd_scores[i] = func_nd_count[i]/func_node_count[i];
+    }
+}

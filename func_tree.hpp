@@ -1,6 +1,7 @@
 #include <vector>
 #include <unordered_map>
 #include <set>
+#include <omp.h>
 
 extern "C" {
 #include <igraph.h>
@@ -22,7 +23,7 @@ class FuncTree {
         this->evg = g;
         igraph_vector_init(&(this->pid), 0);
         igraph_strvector_init(&(this->attr_callstack), 0);
-        igraph_vector_init(&(this->nd_scores), 0);
+        //igraph_vector_init(&(this->nd_scores), 0);
         VASV(&g, "callstack",&(this->attr_callstack));
         VANV(&g, "process_id", &(this->pid));
         this->callstack.resize(g.vcount());
@@ -48,6 +49,6 @@ class FuncTree {
     std::vector<igraph_integer_t> nd_nodes;
     int num_proc;
     std::vector<std::unordered_map<std::string, std::string>> sym_tab_maps;
-    igraph_vector_t nd_scores;
+    std::vector<double> nd_scores;
     std::unordered_map<std::string, int> func_name_to_id_map;
 };
