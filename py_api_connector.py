@@ -1,23 +1,39 @@
 import igraph as ig
-
+import csmpi_func_tree
 
 
 def get_symbol_table_dict(sym_table_path: str) -> dict:
     sym_dict = {}
     with open(sym_table_path, 'r') as f:
-        while f:
-            line = f.readline().split(' ')
-            sym_dict[line[0]] = line[1]
+        for line in f:
+            parts = line.split()
+            if len(parts) >= 2:
+                sym_dict[parts[0]] = parts[1]
     return sym_dict
 
 
-
-
-def make_func_tree(graph_path: str, nd_nodes: list[int], sym_tab_paths: list[str], num_proc: int) -> ig.Graph:
+def _make_func_tree(graph_path: str, nd_nodes: list[int], sym_tab_paths: list[str], num_proc: int) -> ig.Graph:
     assert len(sym_tab_paths) == num_proc, "#Ranks should match the #sym_tab_paths provided"
+
     sym_tabs = []
-    # Making symbol tables for each rank
     for i in range(num_proc):
         sym_tabs.append(get_symbol_table_dict(sym_tab_paths[i]))
-    
-    
+    print("Calling C Backend...")
+    result = csmpi_func_tree.get_func_tree(
+        graph_path=graph_path,
+        sym_tab_maps=sym_tabs,
+        num_proc=num_proc,
+        nd_nodes=nd_nodes,
+    )
+
+    g = ig.Graph(edges=result["edges"], directed=True)
+    g.vs["func_name"] = result["func_names"]
+    g.vs["nd_score"]  = result["nd_scores"]
+    return g
+
+
+def get_func_tree(graph_path: str, nd_nodes: list[int], sym_tabs_dir_path: str, num_proc: int) -> ig.Graph:
+    sym_tab_paths = [f"{sym_tabs_dir_path}/rank_{i}.symtab" for i in range(num_proc)]
+
+    return _make_func_tree(graph_path, nd_nodes, sym_tab_paths, num_proc)
+
