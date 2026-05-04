@@ -31,7 +31,6 @@ void FuncTree::create_func_graph(){
     for (int i = 0; i<func_node_vec.size(); i++){
         func_name_to_id_map[func_node_vec[i]] = i;
     }
-    std::cout<<"Starting edge making..."<<std::endl;
     // Making edges
     #pragma omp parallel for
     for (igraph_integer_t i = 0; i<this->callstack.size(); i++){
@@ -41,7 +40,7 @@ void FuncTree::create_func_graph(){
         for (igraph_integer_t j = 0; j+1 < (igraph_integer_t)cs.size(); j++){
             auto it_j  = sym_tab_dict.find(cs[j]);
             auto it_j1 = sym_tab_dict.find(cs[j+1]);
-            if (it_j == sym_tab_dict.end() || it_j1 == sym_tab_dict.end()){ std::cout<<cs[j]<<" "<<cs[j+1]<<" "<<p<<std::endl; continue;}
+            if (it_j == sym_tab_dict.end() || it_j1 == sym_tab_dict.end()){ std::cout<<"Address pair not resolved in sym table: "<<cs[j]<<" "<<cs[j+1]<<" "<<p<<std::endl; continue;}
             auto it_u = func_name_to_id_map.find(it_j->second);
             auto it_v = func_name_to_id_map.find(it_j1->second);
             if (it_u == func_name_to_id_map.end() || it_v == func_name_to_id_map.end()) continue;
@@ -63,6 +62,7 @@ void FuncTree::create_func_graph(){
     igraph_empty(&(this->func_g), (igraph_integer_t)func_node_vec.size(), IGRAPH_DIRECTED);
     igraph_add_edges(&(this->func_g), &edges, NULL);
     igraph_simplify(&(this->func_g), true, false, NULL);
+    igraph_reverse_edges(&(this->func_g), igraph_ess_all(IGRAPH_EDGEORDER_ID));
     SETVASV(&(this->func_g), "func_name", &attr_func_names);
 
 }

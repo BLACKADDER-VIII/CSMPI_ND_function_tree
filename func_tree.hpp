@@ -27,13 +27,9 @@ class FuncTree {
         VASV(&g, "callstack",&(this->attr_callstack));
         VANV(&g, "process_id", &(this->pid));
         this->callstack.resize(igraph_vcount(&g));
-        std::cout<<"Constructor checkpoint 1"<<std::endl;
         set_callstack();
-        std::cout<<"Constructor checkpoint 2"<<std::endl;
         create_func_graph();
-        std::cout<<"Constructor checkpoint 3"<<std::endl;
         annotate_func_graph();
-        std::cout<<"Constructor checkpoint 4"<<std::endl;
     }
 
     ~FuncTree(){

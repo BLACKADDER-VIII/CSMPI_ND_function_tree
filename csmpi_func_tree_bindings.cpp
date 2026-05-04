@@ -15,17 +15,14 @@ static py::dict get_func_tree(
     std::vector<igraph_integer_t> nd_nodes)
 {
     FuncTree ft(graph_path, sym_tab_maps, num_proc, nd_nodes);
-    std::cout<<"Built FuncTree object..."<<std::endl;
     // Extract all data into plain vectors before ft (and its igraph objects) destructs
     std::vector<std::pair<int,int>> edges      = ft.get_edge_list();
     std::vector<std::string>        func_names = ft.get_func_names();
     std::vector<double>             nd_scores  = ft.get_nd_scores();
-    std::cout<<"Computed vectors..."<<std::endl;
     py::dict result;
     result["edges"]      = edges;
     result["func_names"] = func_names;
     result["nd_scores"]  = nd_scores;
-    std::cout<<"Returning results..."<<std::endl;
     return result;
     // ft destructs here, releasing evg and func_g
 }
