@@ -6,9 +6,9 @@ def get_symbol_table_dict(sym_table_path: str) -> dict:
     sym_dict = {}
     with open(sym_table_path, 'r') as f:
         for line in f:
-            parts = line.split()
-            if len(parts) >= 2:
-                sym_dict[parts[0]] = parts[1]
+            addr, sep, name = line.rstrip('\n').partition('\t')
+            if sep and addr and name:
+                sym_dict[addr] = name
     return sym_dict
 
 

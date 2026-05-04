@@ -62,6 +62,7 @@ void FuncTree::create_func_graph(){
     }
     igraph_empty(&(this->func_g), (igraph_integer_t)func_node_vec.size(), IGRAPH_DIRECTED);
     igraph_add_edges(&(this->func_g), &edges, NULL);
+    igraph_simplify(&(this->func_g), true, false, NULL);
     SETVASV(&(this->func_g), "func_name", &attr_func_names);
 
 }
@@ -116,6 +117,6 @@ void FuncTree::annotate_func_graph(){
     for (int i = 0; i<func_node_count.size(); i++){
         if (func_node_count[i]==0)
             continue;
-        this->nd_scores[i] = func_nd_count[i]/func_node_count[i];
+        this->nd_scores[i] = static_cast<double>(func_nd_count[i]) / func_node_count[i];
     }
 }
