@@ -18,7 +18,6 @@ def _make_func_tree(graph_path: str, nd_nodes: list[int], sym_tab_paths: list[st
     sym_tabs = []
     for i in range(num_proc):
         sym_tabs.append(get_symbol_table_dict(sym_tab_paths[i]))
-    print("Calling C Backend...")
     result = csmpi_func_tree.get_func_tree(
         graph_path=graph_path,
         sym_tab_maps=sym_tabs,
